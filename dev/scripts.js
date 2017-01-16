@@ -21,7 +21,7 @@ var pets = {
 
 var everHad = { 
 	'id': 'everHad',
-	'text': 'Have ever had a pet before?',
+	'text': 'Have you ever had a pet before?',
 	'answer': {
 		'type': 'radio',
 		'responses': [
@@ -93,6 +93,9 @@ var progress = {
 }
 var minRunning = 0;
 var maxRunning = 0;
+
+var hue = 0;
+
 //LOGIC
 
 //goes to next question in queue
@@ -124,7 +127,7 @@ function nextQuestion(questionID){
 			case 'text':
 				//output a textarea and next button
 				answerHtml += '<textarea class="textarea" name="'+question.id+'"></textarea>';
-				answerHtml += '<br><br><button class="next" type="button">Next</button>'
+				answerHtml += '<button class="next round-button" type="button"></button>'
 				
 				//create handlers to move forward on next button
 				initHandlers = function(){
@@ -137,13 +140,14 @@ function nextQuestion(questionID){
 						//go to next
 						nextQuestion();
 					})
+					$('.textarea').focus();
 				};
 			break;
 			case 'list':
 				//output a textarea and next button
 				answerHtml += '<input class="list" type="text" name="'+question.id+'_1"/>';
-				answerHtml += '<br><button class="add" type="button">Add Another</button>';
-				answerHtml += '<br><button class="next" type="button" >Next</button>'
+				answerHtml += '<button class="add button" type="button">Add Another</button>';
+				answerHtml += '<button class="next round-button" type="button" ></button>'
 				
 				//create handlers to move forward on next button
 				initHandlers = function(){
@@ -161,16 +165,18 @@ function nextQuestion(questionID){
 					})
 					$('.add').on('click', function(){
 						index = $('.list').length + 1;
-						$('.add').before('<input class="list" type="text" name="'+question.id+'_'+index+'"/><br>'); 
+						$('.add').before('<input class="list" type="text" name="'+question.id+'_'+index+'"/>'); 
+						$('.list:nth-child('+index+')').focus();
 					})
+					$('.list').focus();
 				};
 			break;
 			case 'radio':
 				//output a radio and label for each option
-				question.answer.responses.forEach(function(response){
+				question.answer.responses.forEach(function(response, index){
 					
-					answerHtml += '<input class="radio active" type="radio" name="'+question.id+'" value="'+response.text+'" data-associate="'+response.associate+'"/>';
-					answerHtml += '<label for="'+question.id+'">'+response.text+'</label>';
+					answerHtml += '<input tabindex="'+(index+1)+'"class="radio active" type="radio" name="'+question.id+'" id="'+response.text+'" value="'+response.text+'" data-associate="'+response.associate+'"/>';
+					answerHtml += '<label class="button" for="'+response.text+'">'+response.text+'</label>';
 
 				});
 
@@ -195,10 +201,10 @@ function nextQuestion(questionID){
 			case 'checkbox':
 				//output a checkbox and label for each option and a next button
 				question.answer.responses.forEach(function(response){
-					answerHtml += '<input class="checkbox" type="checkbox" name="'+question.id+'" value="'+response.text+'" data-associate="'+response.associate+'"/>';
-					answerHtml += '<label for="'+question.id+'">'+response.text+'</label>';
+					answerHtml += '<input class="checkbox" type="checkbox" name="'+question.id+'" id="'+response.text+'" value="'+response.text+'" data-associate="'+response.associate+'"/>';
+					answerHtml += '<label class="button" for="'+response.text+'">'+response.text+'</label>';
 				});
-				answerHtml += '<br><br><button class="next" type="button">Next</button>'
+				answerHtml += '<button class="next round-button" type="button"></button>'
 				
 				//create handlers to move forward on next button
 				initHandlers = function(){
@@ -232,9 +238,16 @@ function nextQuestion(questionID){
 		} 
 		
 		//output to dom
-		$('.question').html(questionHtml);
-		$('.answer').html(answerHtml);
-		initHandlers();
+		$('.wrap').addClass('blur')
+		setTimeout(function(){
+			$('.question').html(questionHtml);
+			$('.answer').html(answerHtml);
+			initHandlers();
+			$('.wrap').removeClass('blur')
+			//rotateHue();
+		},200)
+
+
 
 	} else {
 		//if queue is empty
@@ -293,6 +306,8 @@ function goBack(){
 		questionHistory.shift(0,1);
 		//go to next
 		nextQuestion();
+		//in case going back from last slide
+		$('.remaining').removeClass('blur');
 	}
 	
 }
@@ -316,7 +331,7 @@ function fillInResponse(){
 					if (index == 0){
 						$('.list').val(response);
 					} else {
-						$('.add').before('<input class="list" type="text" name="'+record.question.id+'_'+(index+1)+'" value="'+response+'"/><br>'); 	
+						$('.add').before('<input class="list" type="text" name="'+record.question.id+'_'+(index+1)+'" value="'+response+'"/>'); 	
 					}
 				});
 			break;
@@ -326,21 +341,32 @@ function fillInResponse(){
 
 
 function outputResults(){
-		
-		var confirmHtml = '<h4>All done! Please review your answers before continuing.</h4>';
-		
-		//loop thourgh the history from the back
-		for (var r = (questionHistory.length-1); r >= 0; r-- ){
-			//output an input prefilled with the value and a label, this way forms submit normally
-			var question = questionHistory[r].question;
-			var answer = questionResponses[question.id].toString()
-			confirmHtml += '<p>'+question.text+'</p>';
-			confirmHtml += '<input type="text" class="confirm" disabled name="'+question.id+'" value="'+answer+'">';
-		}
 
-		//output the html
-		$('.question').html(confirmHtml);
-		$('.answer').html('<input type="submit" value="Confirm"/>');
+		$('.wrap').addClass('blur')
+		setTimeout(function(){
+		
+			var congratHtml = '<h4>All done! Please review your answers before continuing.</h4>';
+			var reviewHtml = '';
+			
+			//loop thourgh the history from the back
+			for (var r = (questionHistory.length-1); r >= 0; r-- ){
+				//output an input prefilled with the value and a label, this way forms submit normally
+				var question = questionHistory[r].question;
+				var answer = questionResponses[question.id].toString()
+				reviewHtml += '<p class="review-left">'+question.text+'</p>';
+				reviewHtml += '<input type="text" class="review-right" disabled name="'+question.id+'" value="'+answer+'">';
+			}
+			reviewHtml += '<input type="submit" class="button" id="confirm" value="Confirm"/>';
+
+			//output the html
+			$('.question').html(congratHtml);
+			$('.answer').html(reviewHtml);
+
+			$('.remaining').addClass('blur');
+
+			$('.wrap').removeClass('blur')
+		}, 200)
+
 
 }
 
@@ -366,7 +392,15 @@ function updateProgress(){
 
 	})
 
-	console.log(progress);
+	if (progress.maxRemaining > progress.minRemaining){
+		var remainString = progress.minRemaining + ' to ' + progress.maxRemaining +' Questions Left';
+	} else if (progress.minRemaining > 1) {
+		var remainString = progress.minRemaining + ' questions to Go';
+	} else{
+		var remainString = 'Last One!'
+	}
+
+	$('.remaining').html(remainString);
 }
 
 function dig(questionId, count){
@@ -406,6 +440,13 @@ function setRunningMinMax(count){
 	minRunning = Math.min(minRunning, count);
 	maxRunning = Math.max(maxRunning, count);
 }
+
+function rotateHue(){
+	hue += 1;
+	$('body').css('filter', 'hue-rotate('+hue+'deg)');
+}
+
+setInterval(rotateHue,2000);
 
 function initialize(){
 
