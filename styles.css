@@ -1,0 +1,18 @@
+body {
+  background: #aaa;
+  color: #333;
+  font-family: sans-serif;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+          transform: translate3d(-50%, -50%, 0);
+}
+
+form {
+  padding: 100px;
+  background: #eee;
+}

@@ -1,0 +1,21 @@
+$main: #333;
+$back: #aaa;
+
+body{
+	background: $back;
+	color: $main;
+	font-family: sans-serif;
+}
+
+.center{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate3d(-50%,-50%,0);
+}
+
+
+form{
+	padding: 100px;
+	background: #eee;
+}
