@@ -145,7 +145,7 @@ function nextQuestion(questionID){
 			break;
 			case 'list':
 				//output a textarea and next button
-				answerHtml += '<input class="list" type="text" name="'+question.id+'_1"/>';
+				answerHtml += '<div><input class="list" type="text" name="'+question.id+'_1"/></div>';
 				answerHtml += '<button class="add button" type="button">Add Another</button>';
 				answerHtml += '<button class="next round-button" type="button" ></button>'
 				
@@ -165,9 +165,13 @@ function nextQuestion(questionID){
 					})
 					$('.add').on('click', function(){
 						index = $('.list').length + 1;
-						$('.add').before('<input class="list" type="text" name="'+question.id+'_'+index+'"/>'); 
+						$('.add').before('<div><input class="list" type="text" name="'+question.id+'_'+index+'"/><button class="remove round-button" type="button">✘</button></div>'); 
 						$('.list:nth-child('+index+')').focus();
+						$('.remove').on('click', function(){
+							$(this).parent().remove();
+						})
 					})
+					
 					$('.list').focus();
 				};
 			break;
@@ -257,6 +261,12 @@ function nextQuestion(questionID){
 	//fill in response if it exists in memory
 	fillInResponse();
 
+	//show back button
+	if (questionHistory.length > 0){
+		$('#back').removeClass('blur');
+	} else {
+		$('#back').addClass('blur');
+	}
 	
 
 	
@@ -393,7 +403,7 @@ function updateProgress(){
 	})
 
 	if (progress.maxRemaining > progress.minRemaining){
-		var remainString = progress.minRemaining + ' to ' + progress.maxRemaining +' Questions Left';
+		var remainString = progress.minRemaining + ' - ' + progress.maxRemaining +' Questions Left';
 	} else if (progress.minRemaining > 1) {
 		var remainString = progress.minRemaining + ' questions to Go';
 	} else{

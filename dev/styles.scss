@@ -23,10 +23,10 @@ html{
 	@media screen and (max-height: 500px){
 		font-size: 10px;
 	}
-	@media screen and (max-width: 800px){
+	@media screen and (max-width: 600px){
 		font-size: 2vw;
 	}
-	@media screen and (max-width: 500px){
+	@media screen and (max-width: 400px){
 		font-size: 10px;
 	}
 }
@@ -61,12 +61,14 @@ body{
 
 .wrap{
 	max-width: 60vw;
-	transition: filter $short ease-out, opacity $short ease-out;
-	&.blur{
-		filter: blur(0.5rem);
-		opacity: 0;
-		transition: filter $short ease-in, opacity $short ease-in;
-	}
+	transition: filter $short ease-out, opacity $short ease-out;	
+}
+
+.blur{
+	filter: blur(0.5rem);
+	opacity: 0;
+	transition: filter $short ease-in, opacity $short ease-in;
+	pointer-events: none;
 }
 
 .question, .answer{
@@ -93,7 +95,7 @@ body{
 	text-shadow: none;
 	color: $dark-green;
 	box-shadow: $shadow-low;
-	transition: box-shadow $short, transform $short;
+	transition: box-shadow $short, transform $short, filter $short ease-out, opacity $short ease-out;
 	transform: perspective(15rem);
 	cursor: pointer;
 	font-family: $font;
@@ -181,10 +183,7 @@ body{
 	left: 50%;
 	transform: translateX(-50%);
 	opacity: 0.6;
-	&.blur{
-		filter: blur(0.5rem);
-		opacity: 0;
-	}
+	transition: filter $short ease-out, opacity $short ease-out;
 }
 
 .review-left{
@@ -256,7 +255,7 @@ body{
 }
 
 .list{
-	display: block;
+	display: inline-block;
 	margin: 1rem auto;
 	font-size: 1.5rem;
 	padding: 0.5rem;
@@ -266,8 +265,17 @@ body{
 	outline: none;
 	border-bottom: 2px solid white;
 	color:white;
-	width: 20rem;
+	width: 25rem;
 }
+
+.remove{
+	background: transparent;
+	color: white;
+	border: 2px solid white;
+	margin-left: 2rem;
+	margin-right: -5rem;
+}
+
 
 .textarea{
   resize: none;
